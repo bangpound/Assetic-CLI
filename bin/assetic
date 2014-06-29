@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+
+if (PHP_SAPI !== 'cli') {
+    echo 'Warning: Assetic should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
+}
+
+require __DIR__ . '/../src/bootstrap.php';
+
+call_user_func(function () {
+    $input = new Symfony\Component\Console\Input\ArgvInput();
+    $debug = getenv('ASSETIC_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', ''));
+    if ($debug) {
+        Symfony\Component\Debug\Debug::enable();
+    }
+    $paths = array(dirname(__DIR__), getcwd(), $input->getParameterOption('--working-dir'));
+    $loader = Tacker\LoaderBuilder::create($paths, null, $debug)->build();
+    $container = new Bangpound\Assetic\Container($loader);
+    $app = new Bangpound\Assetic\Application($container);
+    $app->setAutoExit(false);
+    $app->run($input);
+});
