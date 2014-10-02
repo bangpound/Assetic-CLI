@@ -2,43 +2,26 @@
 
 namespace Bangpound\Assetic;
 
-use Symfony\Component\Console\Application as BaseApplication;
-use Pimple\Container;
-use Symfony\Component\Console\Input\InputInterface;
+use Cilex\Provider\Console\ContainerAwareApplication as BaseApplication;
 use Symfony\Component\Console\Input\InputOption;
 
 class Application extends BaseApplication
 {
-    /**
-     * @var Container
-     */
-    private $container;
-
-    public function __construct(Container $container)
+    public function __construct(\Pimple\Container $container)
     {
-        $this->container = $container;
+        $this->setContainer($container);
         parent::__construct('Assetic', '1.0.x-dev');
-    }
-
-    protected function getCommandName(InputInterface $input)
-    {
-        return 'dump';
+        $this->setDispatcher($container['dispatcher']);
     }
 
     protected function getDefaultCommands()
     {
-        $commands = parent::getDefaultCommands();
-        $commands[] = $this->container['assetic.command.dump'];
+        $ids = preg_grep("/^[a-z0-9_.]+?\.command$/", $this->getContainer()->keys());
+        $c = $this->getContainer();
 
-        return $commands;
-    }
-
-    public function getDefinition()
-    {
-        $inputDefinition = parent::getDefinition();
-        $inputDefinition->setArguments();
-
-        return $inputDefinition;
+        return array_map(function ($id) use ($c) {
+            return $c[$id];
+        }, $ids);
     }
 
     protected function getDefaultInputDefinition()

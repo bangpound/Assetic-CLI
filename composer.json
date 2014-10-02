@@ -6,10 +6,12 @@
     "require": {
         "php": ">=5.3.3",
         "symfony/console": "~2.3",
+        "symfony/event-dispatcher": "~2.3",
         "symfony/yaml": "~2.3",
         "flint/tacker": "~1.1.0",
+        "kriswallsmith/spork": "dev-master",
         "incenteev/composer-parameter-handler": "~2.0",
-        "bangpound/assetic-service-provider": "~1.0@dev"
+        "cilex/console-service-provider": "2.0.*@dev",
         "bangpound/assetic-service-provider": "~1.0@dev",
         "symfony/property-access": "~2.3"
     },

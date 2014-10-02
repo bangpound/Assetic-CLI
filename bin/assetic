@@ -18,12 +18,19 @@ call_user_func(function () {
             return $debug;
         },
     ));
+
     $loader = \Tacker\LoaderBuilder::create((array) $container['dir.conf'], null, $container['debug'])->build();
     $configurator = new \Bangpound\Assetic\Configurator($loader);
     $configurator->configureFromPath($container, 'parameters.yml', '[parameters]');
+
+    $config = $container['tracker.loader']->load('assetic.yml');
+
+    // The configurator runs twice because the Pimple Normalizer
+    // had no effect on the previous run.
+    foreach ($config['providers'] as $className => $values) {
+        $container->register(new $className(), $values);
     }
-    $paths = array(dirname(__DIR__), getcwd(), $input->getParameterOption('--working-dir'));
-    $loader = Tacker\LoaderBuilder::create($paths, null, $debug)->build();
+
     $app = new Bangpound\Assetic\Application($container);
     $app->setAutoExit(false);
     $app->run($container['console.input']);
