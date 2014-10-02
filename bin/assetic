@@ -12,6 +12,9 @@ call_user_func(function () {
     $debug = getenv('ASSETIC_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', ''));
     if ($debug) {
         Symfony\Component\Debug\Debug::enable();
+    $loader = \Tacker\LoaderBuilder::create((array) $container['dir.conf'], null, $container['debug'])->build();
+    $configurator = new \Bangpound\Assetic\Configurator($loader);
+    $configurator->configureFromPath($container, 'parameters.yml', '[parameters]');
     }
     $paths = array(dirname(__DIR__), getcwd(), $input->getParameterOption('--working-dir'));
     $loader = Tacker\LoaderBuilder::create($paths, null, $debug)->build();

@@ -10,6 +10,8 @@
         "flint/tacker": "~1.1.0",
         "incenteev/composer-parameter-handler": "~2.0",
         "bangpound/assetic-service-provider": "~1.0@dev"
+        "bangpound/assetic-service-provider": "~1.0@dev",
+        "symfony/property-access": "~2.3"
     },
     "require-dev": {
         "symfony/debug": "~2.3"
@@ -34,10 +36,13 @@
         }
     },
     "extra": {
-        "incenteev-parameters": {
-            "file": "assetic.yml",
-            "keep-outdated": true
+        "incenteev-parameters": [{
+            "file": "conf/parameters.yml"
         },
+        {
+            "file": "conf/assetic.yml"
+
+        }],
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }

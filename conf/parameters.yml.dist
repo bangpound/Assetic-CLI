@@ -1,0 +1,5 @@
+parameters:
+    node_bin: /usr/bin/node
+    java_bin: /usr/bin/java
+    ruby_bin: /usr/bin/ruby
+    sass_bin: /usr/bin/sass
