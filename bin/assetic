@@ -8,12 +8,15 @@ if (PHP_SAPI !== 'cli') {
 require __DIR__ . '/../src/bootstrap.php';
 
 call_user_func(function () {
-    $input = new Symfony\Component\Console\Input\ArgvInput();
-    $debug = getenv('ASSETIC_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', ''));
-    if ($debug) {
-        Symfony\Component\Debug\Debug::enable();
     $container = new Bangpound\Assetic\Container(array(
         'dir.conf' => __DIR__ .'/../conf',
+        'debug' => function ($c) {
+            $debug = getenv('ASSETIC_DEBUG') !== '0' && !$c['console.input']->hasParameterOption(array('--no-debug', ''));
+            if ($debug) {
+                Symfony\Component\Debug\Debug::enable();
+            }
+            return $debug;
+        },
     ));
     $loader = \Tacker\LoaderBuilder::create((array) $container['dir.conf'], null, $container['debug'])->build();
     $configurator = new \Bangpound\Assetic\Configurator($loader);
@@ -23,5 +26,5 @@ call_user_func(function () {
     $loader = Tacker\LoaderBuilder::create($paths, null, $debug)->build();
     $app = new Bangpound\Assetic\Application($container);
     $app->setAutoExit(false);
-    $app->run($input);
+    $app->run($container['console.input']);
 });
