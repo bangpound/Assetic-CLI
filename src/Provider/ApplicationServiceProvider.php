@@ -44,7 +44,7 @@ class ApplicationServiceProvider implements ServiceProviderInterface
             return array(
                 $c['console.input']->getParameterOption('--working-dir'),
                 getcwd(),
-                getcwd() .'/conf',
+                getcwd().'/conf',
             );
         };
 
