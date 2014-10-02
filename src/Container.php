@@ -21,7 +21,8 @@ class Container extends BaseContainer
         $this->register(new ApplicationServiceProvider());
         $this->register(new TackerServiceProvider());
         $this->extend('tacker.config', function ($array, $c) {
-              $array['paths'][] = $c['root_dir'] .'/conf';
+              $array['paths'][] = $c['root_dir'].'/conf';
+              $array['paths'][] = self::getHomeDir();
 
               return $array;
           });
@@ -46,5 +47,18 @@ class Container extends BaseContainer
         foreach ($values as $key => $value) {
             $this->offsetSet($key, $value);
         }
+    }
+
+    protected static function getHomeDir()
+    {
+        $home = getenv('ASSETIC_HOME');
+        if (!$home) {
+            if (!getenv('HOME')) {
+                throw new \RuntimeException('The HOME or ASSETIC_HOME environment variable must be set for composer to run correctly');
+            }
+            $home = rtrim(getenv('HOME'), '/').'/.assetic';
+        }
+
+        return $home;
     }
 }
