@@ -19,7 +19,7 @@ class WatchCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('assetic:watch')
+            ->setName('watch')
             ->setDescription('Dumps assets to the filesystem as their source files are modified')
             ->addArgument('write_to', InputArgument::OPTIONAL, 'Override the configured asset root')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Force an initial generation of all assets')

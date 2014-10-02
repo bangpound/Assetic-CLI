@@ -2,15 +2,14 @@
 
 namespace Bangpound\Assetic\Provider;
 
+use Bangpound\Assetic\Console\PimpleHelper;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Spork\EventDispatcher\EventDispatcher;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Command\ListCommand;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Tacker\LoaderBuilder;
-use Tacker\Normalizer\ChainNormalizer;
-use Tacker\Normalizer\PimpleNormalizer;
+use Symfony\Component\Console\Input\ArgvInput;
 
 class ApplicationServiceProvider implements ServiceProviderInterface
 {
@@ -24,17 +23,30 @@ class ApplicationServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple['console.input'] = function ($c) {
-            return new \Symfony\Component\Console\Input\ArgvInput();
+        $pimple['console.input'] = function () {
+            return new ArgvInput();
         };
-        $pimple['loader.paths'] = function ($c) {
+        $pimple['pimple_helper'] = function ($c) {
+            return new PimpleHelper($c);
+        };
+        $pimple->extend('console', function (Application $app, Container $c) {
+            $app->getHelperSet()->set($c['pimple_helper']);
+              $ids = preg_grep("/^[a-z0-9_.]+?\.command$/", $c->keys());
+
+              $app->addCommands(array_map(function ($id) use ($c) {
+                      return $c[$id];
+                  }, $ids));
+
+              return $app;
+        });
+
+        $pimple['paths'] = function ($c) {
             return array(
                 $c['console.input']->getParameterOption('--working-dir'),
                 getcwd(),
                 getcwd() .'/conf',
             );
         };
-        $pimple['debug'] = FALSE;
 
         $pimple['app.help.command'] = function ($c) {
             return new HelpCommand();
@@ -44,24 +56,6 @@ class ApplicationServiceProvider implements ServiceProviderInterface
         };
         $pimple['dispatcher'] = function ($c) {
             return new EventDispatcher();
-        };
-
-        // Build the loader to include the default normalizers and also
-        // the Pimple Normalizer.
-        $pimple['tracker.loader'] = function (Container $c) {
-            return LoaderBuilder::create($c['loader.paths'], null, $c['debug'])
-                ->addDefaultNormalizers()
-                ->configureNormalizers(function (ChainNormalizer $normalizer) use ($c) {
-                    $normalizer->add($c['tacker.normalizer.pimple']);
-                })->build();
-        };
-        $pimple['tacker.normalizer.pimple'] = function ($c) {
-            return new PimpleNormalizer($c);
-        };
-
-        $pimple['configurator'] = function ($c) {
-            $configurator = new \Bangpound\Assetic\Configurator($c['tracker.loader']);
-            return $configurator;
         };
     }
 }

@@ -8,30 +8,7 @@ if (PHP_SAPI !== 'cli') {
 require __DIR__ . '/../src/bootstrap.php';
 
 call_user_func(function () {
-    $container = new Bangpound\Assetic\Container(array(
-        'dir.conf' => __DIR__ .'/../conf',
-        'debug' => function ($c) {
-            $debug = getenv('ASSETIC_DEBUG') !== '0' && !$c['console.input']->hasParameterOption(array('--no-debug', ''));
-            if ($debug) {
-                Symfony\Component\Debug\Debug::enable();
-            }
-            return $debug;
-        },
-    ));
+    $container = new Bangpound\Assetic\Container(dirname(__DIR__), getenv('ASSETIC_DEBUG') !== '0');
 
-    $loader = \Tacker\LoaderBuilder::create((array) $container['dir.conf'], null, $container['debug'])->build();
-    $configurator = new \Bangpound\Assetic\Configurator($loader);
-    $configurator->configureFromPath($container, 'parameters.yml', '[parameters]');
-
-    $config = $container['tracker.loader']->load('assetic.yml');
-
-    // The configurator runs twice because the Pimple Normalizer
-    // had no effect on the previous run.
-    foreach ($config['providers'] as $className => $values) {
-        $container->register(new $className(), $values);
-    }
-
-    $app = new Bangpound\Assetic\Application($container);
-    $app->setAutoExit(false);
-    $app->run($container['console.input']);
+    $container['console']->run($container['console.input']);
 });

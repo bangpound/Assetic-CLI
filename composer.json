@@ -8,12 +8,17 @@
         "symfony/console": "~2.3",
         "symfony/event-dispatcher": "~2.3",
         "symfony/yaml": "~2.3",
+        "pimple/pimple": "3.0 as 2.1",
         "flint/tacker": "~1.1.0",
         "kriswallsmith/spork": "dev-master",
         "incenteev/composer-parameter-handler": "~2.0",
         "cilex/console-service-provider": "2.0.*@dev",
         "bangpound/assetic-service-provider": "~1.0@dev",
-        "symfony/property-access": "~2.3"
+        "symfony/property-access": "~2.3",
+        "silex/providers": "~2.0@dev",
+        "silex/api": "~2.0@dev",
+        "flint/brick": "~1.0@dev",
+        "symfony/monolog-bridge": "~2.3"
     },
     "require-dev": {
         "symfony/debug": "~2.3"
