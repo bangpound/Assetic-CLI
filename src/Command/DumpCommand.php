@@ -61,6 +61,8 @@ class DumpCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $stdout)
     {
+        $c = $this->getApplication()->getContainer();
+
         // capture error output
         $stderr = $stdout instanceof ConsoleOutputInterface
             ? $stdout->getErrorOutput()
@@ -68,8 +70,7 @@ class DumpCommand extends AbstractCommand
 
         // print the header
         $stdout->writeln(sprintf('Dumping all assets.'));
-        $debug = $this->getHelperSet()->get('pimple')->getContainer()->offsetGet('debug');
-        $stdout->writeln(sprintf('Debug mode is <comment>%s</comment>.', $debug ? 'on' : 'off'));
+        $stdout->writeln(sprintf('Debug mode is <comment>%s</comment>.', $c['debug'] ? 'on' : 'off'));
         $stdout->writeln('');
 
         if ($this->spork) {

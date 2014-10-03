@@ -2,17 +2,22 @@
 
 namespace Bangpound\Assetic\Provider;
 
-use Bangpound\Assetic\Console\PimpleHelper;
+use G\Yaml2Pimple\ContainerBuilder;
+use G\Yaml2Pimple\YamlFileLoader;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Spork\EventDispatcher\EventDispatcher;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Component\Console\Command\ListCommand;
 use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ApplicationServiceProvider implements ServiceProviderInterface
 {
+    const COMMAND_MATCH = '/^[a-z0-9_.]+?\.command$/';
+
     /**
      * Registers services on the given container.
      *
@@ -23,39 +28,58 @@ class ApplicationServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple['console.input'] = function () {
-            return new ArgvInput();
-        };
-        $pimple['pimple_helper'] = function ($c) {
-            return new PimpleHelper($c);
-        };
-        $pimple->extend('console', function (Application $app, Container $c) {
-            $app->getHelperSet()->set($c['pimple_helper']);
-              $ids = preg_grep("/^[a-z0-9_.]+?\.command$/", $c->keys());
+        /**
+         * Console parameters and services.
+         */
+        $pimple['console.class']   = 'Symfony\\Component\\Console\\Application';
+        $pimple['console.name']    = 'Assetic';
+        $pimple['console.version'] = '1.0.x-dev';
+        $pimple['console.input']   = function () { return new ArgvInput(); };
 
-              $app->addCommands(array_map(function ($id) use ($c) {
-                      return $c[$id];
-                  }, $ids));
-
-              return $app;
+        $pimple['config.builder'] = function ($c) {
+            return new ContainerBuilder($c);
+        };
+        $pimple['config.locator'] = function ($c) {
+            return new FileLocator(__DIR__, $c['conf'], __DIR__.'/conf');
+        };
+        $pimple['config.loader']  = $pimple->factory(function ($c) {
+            return new YamlFileLoader($c['config.builder'], $c['config.locator']);
         });
 
-        $pimple['paths'] = function ($c) {
-            return array(
-                $c['console.input']->getParameterOption('--working-dir'),
-                getcwd(),
-                getcwd().'/conf',
-            );
-        };
+        /**
+         * These commands fell off and probably don't actually need to be here.
+         */
+        $pimple['app.help.command'] = function () { return new HelpCommand(); };
+        $pimple['app.list.command'] = function () { return new ListCommand(); };
 
-        $pimple['app.help.command'] = function ($c) {
-            return new HelpCommand();
+        /**
+         *
+         * @return EventDispatcher
+         */
+        $pimple['dispatcher'] = function ($c) { return new EventDispatcher(); };
+        $pimple->extend('dispatcher', function (EventDispatcherInterface $eventDispatcher, Container $c) {
+            $c['console']->setContainer($c); $c['console']->setDispatcher($eventDispatcher);
+
+            return $eventDispatcher;
+        });
+
+        /**
+         * Creates the console application that is used by the front controller.
+         *
+         * @param Container $c
+         * @return Application
+         */
+        $pimple['console'] = function (Container $c) {
+            return new $c['console.class']($c['console.name'], $c['console.version']);
         };
-        $pimple['app.list.command'] = function ($c) {
-            return new ListCommand();
-        };
-        $pimple['dispatcher'] = function ($c) {
-            return new EventDispatcher();
-        };
+        $pimple->extend('console', function (Application $app, Container $c) {
+            $ids = preg_grep("", $c->keys());
+
+            $app->addCommands(array_map(function ($id) use ($c) {
+                return $c[$id];
+            }, $ids));
+
+            return $app;
+        });
     }
 }

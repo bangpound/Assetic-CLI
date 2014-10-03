@@ -8,7 +8,7 @@ if (PHP_SAPI !== 'cli') {
 require __DIR__ . '/../src/bootstrap.php';
 
 call_user_func(function () {
-    $container = new Bangpound\Assetic\Container(dirname(__DIR__), getenv('ASSETIC_DEBUG') !== '0');
-
+    $container = new Bangpound\Assetic\Container(dirname(__DIR__), getenv('ASSETIC_DEBUG') !== '0', array('conf' => 'assetic.yml'));
+    $container['console']->setDispatcher($container['dispatcher']);
     $container['console']->run($container['console.input']);
 });
