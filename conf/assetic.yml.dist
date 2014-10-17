@@ -12,9 +12,7 @@ files:
     ../../lib/FieldAsseticServiceProvider.php
 
 providers:
-    Bangpound\Pimple\Provider\ProviderServiceProvider: ~
     Silex\Provider\MonologServiceProvider: ~
-
 
     Bangpound\Pimple\Provider\AsseticServiceProvider:
         assetic.read_from: %read_from%

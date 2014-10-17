@@ -7,12 +7,9 @@ use Symfony\Component\Console\Input\InputOption;
 
 class Application extends BaseApplication
 {
-    protected function getDefaultInputDefinition()
+    public function __construct($name = 'UNKNOWN', $version = 'UNKNOWN')
     {
-        $definition = parent::getDefaultInputDefinition();
-        $definition->addOption(new InputOption('working-dir', null, InputOption::VALUE_OPTIONAL));
-        $definition->addOption(new InputOption('no-debug', null, InputOption::VALUE_OPTIONAL));
-
-        return $definition;
+        parent::__construct($name, $version);
+        $this->getDefinition()->addOption(new InputOption('--config', '-c', InputOption::VALUE_NONE, 'Configuration file'));
     }
 }
