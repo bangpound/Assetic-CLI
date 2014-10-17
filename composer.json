@@ -4,6 +4,7 @@
     "type": "project",
     "description": "Assetic as a command line tool",
     "require": {
+        "bangpound/protosilex-pimple": "~1.0@dev",
         "bangpound/assetic-service-provider": "~1.0@dev",
         "cilex/console-service-provider": "2.0.*@dev",
         "flint/tacker": "~1.1.0",
