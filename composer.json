@@ -5,20 +5,7 @@
     "description": "Assetic as a command line tool",
     "require": {
         "php": ">=5.3.3",
-        "bangpound/protosilex-pimple": "~1.0@dev",
-        "bangpound/assetic-service-provider": "~1.0@dev",
-        "cilex/console-service-provider": "2.0.*@dev",
-        "flint/tacker": "~1.1",
-        "incenteev/composer-parameter-handler": "~2.0",
-        "kriswallsmith/spork": "dev-master",
-        "monolog/monolog": "~1.11",
-        "silex/silex": "~2.0@dev",
-        "symfony/config": "~2.3",
-        "symfony/console": "~2.3",
-        "symfony/event-dispatcher": "~2.3",
-        "symfony/finder": "~2.3",
-        "symfony/property-access": "~2.3",
-        "symfony/yaml": "~2.3"
+        "bangpound/assetic-service-provider": "~1.0@dev"
     },
     "require-dev": {
         "symfony/debug": "~2.3"
@@ -30,12 +17,6 @@
         "bin-dir": "bin"
     },
     "scripts": {
-        "post-install-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
-        ],
-        "post-update-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
-        ]
     },
     "autoload": {
         "psr-4": {
@@ -43,11 +24,6 @@
         }
     },
     "extra": {
-        "incenteev-parameters": [
-            {
-                "file": "conf/parameters.yml"
-            }
-        ],
         "branch-alias": {
             "dev-develop": "1.1.x-dev"
         }
