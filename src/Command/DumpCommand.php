@@ -11,6 +11,7 @@
 
 namespace Bangpound\Assetic\Command;
 
+use Assetic\Factory\LazyAssetManager;
 use Spork\Batch\Strategy\ChunkStrategy;
 use Spork\EventDispatcher\WrappedEventDispatcher;
 use Spork\ProcessManager;
@@ -73,20 +74,25 @@ class DumpCommand extends AbstractCommand
         $stdout->writeln(sprintf('Debug mode is <comment>%s</comment>.', $c['debug'] ? 'on' : 'off'));
         $stdout->writeln('');
 
-        if ($this->spork) {
-            $batch = $this->spork->createBatchJob(
-                $this->am->getNames(),
-                new ChunkStrategy($input->getOption('forks'))
-            );
+        if ($this->am instanceof LazyAssetManager) {
+            if ($this->spork) {
+                $batch = $this->spork->createBatchJob(
+                  $this->am->getNames(),
+                  new ChunkStrategy($input->getOption('forks'))
+                );
 
-            $self = $this;
-            $batch->execute(function ($name) use ($self, $stdout) {
-                $self->dumpAsset($name, $stdout);
-            });
-        } else {
-            foreach ($this->am->getNames() as $name) {
-                $this->dumpAsset($name, $stdout);
+                $self = $this;
+                $batch->execute(function ($name) use ($self, $stdout) {
+                    $self->dumpAsset($name, $stdout);
+                });
+            } else {
+                foreach ($this->am->getNames() as $name) {
+                    $this->dumpAsset($name, $stdout);
+                }
             }
+        }
+        else {
+            $c['assetic.writer']->writeManagerAssets($c['assetic.asset_manager']);
         }
     }
 }
