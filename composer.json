@@ -8,9 +8,6 @@
         "symfony/console": "~2.3",
         "symfony/event-dispatcher": "~2.3",
         "symfony/yaml": "~2.3",
-        "flint/tacker": "~1.1.0",
-        "kriswallsmith/spork": "dev-master",
-        "incenteev/composer-parameter-handler": "~2.0",
         "cilex/console-service-provider": "2.0.*@dev",
         "bangpound/assetic-service-provider": "~1.0@dev",
         "symfony/property-access": "~2.3"
@@ -24,27 +21,12 @@
     "config": {
         "bin-dir": "bin"
     },
-    "scripts": {
-        "post-install-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
-        ],
-        "post-update-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
-        ]
-    },
     "autoload": {
         "psr-4": {
             "Bangpound\\Assetic\\": "src/"
         }
     },
     "extra": {
-        "incenteev-parameters": [{
-            "file": "conf/parameters.yml"
-        },
-        {
-            "file": "conf/assetic.yml"
-
-        }],
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }
