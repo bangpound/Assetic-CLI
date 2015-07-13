@@ -1,37 +1,54 @@
 #!/usr/bin/env php
 <?php
 
-if (PHP_SAPI !== 'cli') {
-    echo 'Warning: Assetic should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
-}
+define('FLDMUSE_ROOT', getcwd());
 
-require __DIR__ . '/../src/bootstrap.php';
+require_once FLDMUSE_ROOT.'/vendor/autoload.php';
 
-call_user_func(function () {
-    $container = new Bangpound\Assetic\Container(array(
-        'dir.conf' => __DIR__ .'/../conf',
-        'debug' => function ($c) {
-            $debug = getenv('ASSETIC_DEBUG') !== '0' && !$c['console.input']->hasParameterOption(array('--no-debug', ''));
-            if ($debug) {
-                Symfony\Component\Debug\Debug::enable();
-            }
-            return $debug;
-        },
-    ));
+$c = new Pimple\Container(array(
+  'debug' => true,
+));
+$c->register(new Cilex\Provider\Console\ConsoleServiceProvider(), array(
+  'console.name' => 'Assetic',
+  'console.version' => '1.0',
+));
+$c->register(new \Bangpound\Pimple\Provider\AsseticServiceProvider(), array(
+  'assetic.read_from' => FLDMUSE_ROOT .'/build/fieldmuseum-website/patternlab/source',
+  'assetic.write_to' => FLDMUSE_ROOT .'/docroot/profiles/fieldmuseum/themes/esquif',
+  'assetic.filter.autoprefixer.bin' => '/usr/local/bin/autoprefixer',
+  'assetic.filter.coffeescript.bin' => '/usr/local/bin/coffee',
+  'assetic.filter.autoprefixer.browsers' => array(
+    '> 1%',
+    'last 3 versions',
+    'ff >= 17',
+    'opera >= 12.1',
+    'ie >= 8',
+    'Android >= 3'
+  ),
+  'assetic.node_bin'    => '/usr/local/bin/node',
+  'assetic.java_bin'    => '/usr/bin/java',
+  'assetic.ruby_bin'    => '/usr/bin/ruby',
+  'assetic.sass_bin'    => '/usr/bin/sass',
 
-    $loader = \Tacker\LoaderBuilder::create((array) $container['dir.conf'], null, $container['debug'])->build();
-    $configurator = new \Bangpound\Assetic\Configurator($loader);
-    $configurator->configureFromPath($container, 'parameters.yml', '[parameters]');
+));
+$c->register(new \Bangpound\Pimple\Provider\Filter\CompassFilterServiceProvider(), array(
+  'assetic.filter.compass.bin'              => '/Users/bjd/.rvm/gems/ruby-2.2.2@fldmuse/bin/compass',
+  'assetic.filter.compass.no_line_comments' => true,
+  'assetic.filter.compass.style'            => 'nested'
+));
+$c->register(new FieldAsseticServiceProvider());
 
-    $config = $container['tracker.loader']->load('assetic.yml');
+$c['assetic.prepare.command'] = function (\Pimple\Container $c) {
+    return new PrepareCommand($c);
+};
+$c['assetic.writer'] = function ($app) {
+    return new \Assetic\AssetWriter($app['assetic.write_to']);
+};
 
-    // The configurator runs twice because the Pimple Normalizer
-    // had no effect on the previous run.
-    foreach ($config['providers'] as $className => $values) {
-        $container->register(new $className(), $values);
-    }
-
-    $app = new Bangpound\Assetic\Application($container);
-    $app->setAutoExit(false);
-    $app->run($container['console.input']);
+$c->extend('console', function (\Symfony\Component\Console\Application $console, \Pimple\Container $c) {
+    $console->add($c['assetic.dump.command']);
+    $console->add($c['assetic.prepare.command']);
+    return $console;
 });
+
+$c['console']->run();

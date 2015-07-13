@@ -13,6 +13,7 @@ namespace Bangpound\Assetic\Command;
 
 use Assetic\Asset\AssetCollectionInterface;
 use Assetic\Asset\AssetInterface;
+use Assetic\AssetManager;
 use Assetic\Util\VarUtils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,11 +24,15 @@ abstract class AbstractCommand extends Command
     protected $am;
     protected $basePath;
 
+    public function __construct(AssetManager $am, $basePath)
+    {
+        $this->am = $am;
+        $this->basePath = $basePath;
+        parent::__construct();
+    }
+
     protected function initialize(InputInterface $input, OutputInterface $stdout)
     {
-        $this->am = $this->getApplication()->getService('assetic.asset_manager');
-
-        $this->basePath = $this->getApplication()->getService('assetic.write_to');
         if ($input->hasArgument('write_to') && $basePath = $input->getArgument('write_to')) {
             $this->basePath = $basePath;
         }
@@ -78,7 +83,6 @@ abstract class AbstractCommand extends Command
 
             // resolve the target path
             $target = rtrim($this->basePath, '/').'/'.$asset->getTargetPath();
-            $target = str_replace('_controller/', '', $target);
             $target = VarUtils::resolve($target, $asset->getVars(), $asset->getValues());
 
             if (!is_dir($dir = dirname($target))) {

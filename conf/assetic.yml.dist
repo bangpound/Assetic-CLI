@@ -1,12 +1,24 @@
+--
+## This file contains project specific settings. If you put these simple
+## and basic settings in `assetic.yml`, Assetic will recognize a project
+## with assets, filters, etc.
+--
+
 parameters:
     read_from: ~
     write_to: ~
 
+files:
+    ../../lib/FieldAsseticServiceProvider.php
+
 providers:
+    Silex\Provider\MonologServiceProvider: ~
+
     Bangpound\Pimple\Provider\AsseticServiceProvider:
         assetic.read_from: %read_from%
         assetic.write_to:  %write_to%
         assetic.ruby_bin:  %ruby_bin%
         assetic.sass_bin:  %sass_bin%
 
-    Bangpound\Pimple\Provider\Filter\CompassFilterServiceProvider: ~
+    Bangpound\Pimple\Provider\Filter\CompassFilterServiceProvider:
+    FieldAsseticServiceProvider:
