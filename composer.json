@@ -5,6 +5,7 @@
     "description": "Assetic as a command line tool",
     "require": {
         "php": ">=5.3.3",
+        "symfony/finder": "~2.3",
         "bangpound/assetic-service-provider": "~1.0@dev"
     },
     "require-dev": {
@@ -21,7 +22,10 @@
     "autoload": {
         "psr-4": {
             "Bangpound\\Assetic\\": "src/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "extra": {
         "branch-alias": {
