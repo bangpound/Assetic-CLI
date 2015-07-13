@@ -15,8 +15,8 @@ $c->register(new Cilex\Provider\Console\ConsoleServiceProvider(), array(
 $c->register(new \Bangpound\Pimple\Provider\AsseticServiceProvider(), array(
   'assetic.read_from' => FLDMUSE_ROOT .'/build/fieldmuseum-website/patternlab/source',
   'assetic.write_to' => FLDMUSE_ROOT .'/docroot/profiles/fieldmuseum/themes/esquif',
-  'assetic.filter.autoprefixer.bin' => '/usr/local/bin/autoprefixer',
-  'assetic.filter.coffeescript.bin' => '/usr/local/bin/coffee',
+  'assetic.filter.autoprefixer.bin' => \Bangpound\Assetic\find_executable('autoprefixer', '/usr/local/bin/autoprefixer'),
+  'assetic.filter.coffeescript.bin' => \Bangpound\Assetic\find_executable('coffee', '/usr/local/bin/coffee'),
   'assetic.filter.autoprefixer.browsers' => array(
     '> 1%',
     'last 3 versions',
@@ -25,14 +25,9 @@ $c->register(new \Bangpound\Pimple\Provider\AsseticServiceProvider(), array(
     'ie >= 8',
     'Android >= 3'
   ),
-  'assetic.node_bin'    => '/usr/local/bin/node',
-  'assetic.java_bin'    => '/usr/bin/java',
-  'assetic.ruby_bin'    => '/usr/bin/ruby',
-  'assetic.sass_bin'    => '/usr/bin/sass',
-
 ));
 $c->register(new \Bangpound\Pimple\Provider\Filter\CompassFilterServiceProvider(), array(
-  'assetic.filter.compass.bin'              => '/Users/bjd/.rvm/gems/ruby-2.2.2@fldmuse/bin/compass',
+  'assetic.filter.compass.bin'              => Bangpound\Assetic\find_executable('compass', '/usr/bin/compass'),
   'assetic.filter.compass.no_line_comments' => true,
   'assetic.filter.compass.style'            => 'nested'
 ));
