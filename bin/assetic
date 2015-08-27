@@ -31,7 +31,7 @@ $c->register(new \Bangpound\Pimple\Provider\Filter\CompassFilterServiceProvider(
   'assetic.filter.compass.no_line_comments' => true,
   'assetic.filter.compass.style'            => 'nested'
 ));
-$c->register(new FieldAsseticServiceProvider());
+$c->register(new ProjectAsseticServiceProvider());
 
 $c['assetic.prepare.command'] = function (\Pimple\Container $c) {
     return new PrepareCommand($c);
