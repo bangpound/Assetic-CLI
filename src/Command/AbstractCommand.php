@@ -69,7 +69,7 @@ abstract class AbstractCommand extends Command
      * @param AssetInterface  $asset  An asset
      * @param OutputInterface $stdout The command output
      *
-     * @throws RuntimeException If there is a problem writing the asset
+     * @throws \RuntimeException If there is a problem writing the asset
      */
     private function doDump(AssetInterface $asset, OutputInterface $stdout)
     {
