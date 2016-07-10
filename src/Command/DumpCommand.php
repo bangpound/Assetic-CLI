@@ -62,8 +62,6 @@ class DumpCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $stdout)
     {
-        $c = $this->getApplication()->getContainer();
-
         // capture error output
         $stderr = $stdout instanceof ConsoleOutputInterface
             ? $stdout->getErrorOutput()
@@ -71,7 +69,7 @@ class DumpCommand extends AbstractCommand
 
         // print the header
         $stdout->writeln(sprintf('Dumping all assets.'));
-        $stdout->writeln(sprintf('Debug mode is <comment>%s</comment>.', $c['debug'] ? 'on' : 'off'));
+        $stdout->writeln(sprintf('Debug mode is <comment>%s</comment>.', $this->debug ? 'on' : 'off'));
         $stdout->writeln('');
 
         if ($this->am instanceof LazyAssetManager) {
@@ -92,7 +90,7 @@ class DumpCommand extends AbstractCommand
             }
         }
         else {
-            $c['assetic.writer']->writeManagerAssets($c['assetic.asset_manager']);
+            $this->aw->writeManagerAssets($this->am);
         }
     }
 }

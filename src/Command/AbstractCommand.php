@@ -14,6 +14,7 @@ namespace Bangpound\Assetic\Command;
 use Assetic\Asset\AssetCollectionInterface;
 use Assetic\Asset\AssetInterface;
 use Assetic\AssetManager;
+use Assetic\AssetWriter;
 use Assetic\Util\VarUtils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,13 +22,38 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractCommand extends Command
 {
+    /**
+     * @var \Assetic\AssetManager
+     */
     protected $am;
+
+    /**
+     * @var \Assetic\AssetWriter
+     */
+    protected $aw;
+
+    /**
+     * @var string
+     */
     protected $basePath;
 
-    public function __construct(AssetManager $am, $basePath)
+    /**
+     * @var array
+     */
+    protected $variables;
+
+    /**
+     * @var bool
+     */
+    protected $debug;
+
+    public function __construct(AssetManager $am, AssetWriter $aw, $basePath, array $variables = array(), $debug = false)
     {
         $this->am = $am;
+        $this->aw = $aw;
         $this->basePath = $basePath;
+        $this->variables = $variables;
+        $this->debug = $debug;
         parent::__construct();
     }
 
@@ -75,7 +101,7 @@ abstract class AbstractCommand extends Command
     {
         $combinations = VarUtils::getCombinations(
             $asset->getVars(),
-            $this->getApplication()->getContainer()->getService('assetic.variables')
+            $this->variables
         );
 
         foreach ($combinations as $combination) {
